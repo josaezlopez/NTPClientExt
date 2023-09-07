@@ -4,7 +4,10 @@ Clase para ESP32, derivada de NTPClient(Arduino) que añade, entre otras cosas, 
 Pensado para ejecutarse en esp32 como una tarea.
 
 Dependencias:
+
 https://github.com/arduino-libraries/NTPClient
+
 https://github.com/josaezlopez/threadesp32
+
 
 
