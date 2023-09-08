@@ -1,13 +1,19 @@
 #include <NTPClientExt.hpp>
 
 // Constructor
-NTPClientExt::NTPClientExt(const char* _poolServerName, long _timeOffset, int _updateInterval)
+NTPClientExt::NTPClientExt(const char* _poolServerName, long _timeOffset, int _updateInterval,bool _daylightSaving)
   : NTPClient(ntpUDP, _poolServerName, _timeOffset * 3600, _updateInterval * 1000 * 60), 
     TaskParent(NTPTASK_NAME,NTPTASK_HEAP,NTPTASK_PRIORITY, NTPTASK_CORE){
-  timeZone = _timeOffset;
-  monthStartsSummerTime = NTP_MONTHSTARTSUMMERTIME;
-  monthEndsSummerTime = NTP_MONTHENDSUMMERTIME;
+      daylightSaving = _daylightSaving;
+      timeZone = _timeOffset;
 
+}
+
+void NTPClientExt::setDaylightSaving(int _startMonth,int _endMonth){
+    monthStartsSummerTime =   _startMonth;
+    monthEndsSummerTime = _endMonth; 
+    daylightSaving = true;
+    forceUpdate();
 }
 
 
@@ -102,14 +108,16 @@ void NTPClientExt::loop(){
 
 // Actualiza la hora, de ser necesario
 void NTPClientExt::update(){
-  if(itsSummerTime())
-    setTimeOffset((timeZone + 1) * 3600);   
-  else
-    setTimeOffset(timeZone  * 3600);      
-  
+  if(daylightSaving){
+    if(itsSummerTime())
+      setTimeOffset((timeZone + 1) * 3600);   
+    else
+      setTimeOffset(timeZone  * 3600);      
+    }  
   if(isConnected()){
     NTPClient::update();  
     }
+
 }
 
 

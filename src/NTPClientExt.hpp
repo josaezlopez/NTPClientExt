@@ -10,7 +10,7 @@
 #define NTPTASK_PRIORITY    TaskParent::th_LOWEST_PRIORITY
 #define NTPTASK_CORE        1
 
-#define NTP_MONTHSTARTSUMMERTIME 3
+
 #define NTP_MONTHENDSUMMERTIME 10
 
 #define LEAPYEAR(year)  (((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) ? true : false)
@@ -21,7 +21,7 @@ class NTPClientExt : public NTPClient, public TaskParent{
   public:
   
     /* Constructor */
-    NTPClientExt(const char* _poolServerName, long _timeOffset, int _updateInterval);
+    NTPClientExt(const char* _poolServerName, long _timeOffset, int _updateInterval,bool _daylightSaving = false);
     String getFormattedDate();      
     char*  cGetFormattedDate();
 
@@ -41,8 +41,8 @@ class NTPClientExt : public NTPClient, public TaskParent{
     int  getLastSundayOfMonth(int anyo,int mes);
     bool itsSummerTime();
     char* getNameOfMonth(int day);
-
     void update();
+    void setDaylightSaving(int _startMonth,int _endMonth);
     struct tm* epoch2tm(time_t epoch);
 
 
@@ -64,8 +64,9 @@ class NTPClientExt : public NTPClient, public TaskParent{
     int tcCentury[6] = {5,3,1,0,-2,-4};
     int tcMonth[12]  = {6,2,2,5,0,3,5,1,4,6,2,4};
     int daysOfTheMonth[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
-    int monthStartsSummerTime;
-    int monthEndsSummerTime;
+    int monthStartsSummerTime =   3;  // The last Sunday of March (Western Europe)
+    int monthEndsSummerTime = 10;     // The last Sunday in October (Western Europe)
+    bool daylightSaving;
     char nombreMeses[2][12][5] = {" Ene"," Feb"," Mar"," Abr"," May"," Jun"," Jul"," Ago"," Sep"," Oct"," Nov"," Dic",
                                   " Jan"," Feb"," Mar"," Apr"," May"," Jun"," Jul"," Aug"," Sep"," Oct"," Nov"," Dec"};
     char nombreDia[2][7][10] = {"Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado",
