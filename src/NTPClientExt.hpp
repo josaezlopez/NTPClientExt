@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include <WiFi.H>
 #include <NTPClient.h>
 #include <threadesp32.h>
 
