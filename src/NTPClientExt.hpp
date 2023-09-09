@@ -21,7 +21,7 @@ class NTPClientExt : public NTPClient, public TaskParent{
   public:
   
     /* Constructor */
-    NTPClientExt(const char* _poolServerName, long _timeOffset, int _updateInterval,bool _daylightSaving = false);
+    NTPClientExt(const char* _poolServerName, int _timeOffset, int _updateInterval,bool _daylightSaving = false);
     String getFormattedDate();      
     char*  cGetFormattedDate();
 
@@ -41,6 +41,8 @@ class NTPClientExt : public NTPClient, public TaskParent{
     bool itsSummerTime();
     void update();
     void setDaylightSaving(int _startMonth,int _endMonth);
+    void unsetDaylightSaving();
+    void setTimeZone(int tz);
     int  getDayOfTheYear();
     const char* getNameOfMonth(int day);
     const char* getNameOfDay(int dia);

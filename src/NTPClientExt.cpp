@@ -1,7 +1,7 @@
 #include <NTPClientExt.hpp>
 
 // Constructor
-NTPClientExt::NTPClientExt(const char* _poolServerName, long _timeOffset, int _updateInterval,bool _daylightSaving)
+NTPClientExt::NTPClientExt(const char* _poolServerName, int _timeOffset, int _updateInterval,bool _daylightSaving)
   : NTPClient(ntpUDP, _poolServerName, _timeOffset * 3600, _updateInterval * 1000 * 60), 
     TaskParent(NTPTASK_NAME,NTPTASK_HEAP,NTPTASK_PRIORITY, NTPTASK_CORE){
       daylightSaving = _daylightSaving;
@@ -10,12 +10,16 @@ NTPClientExt::NTPClientExt(const char* _poolServerName, long _timeOffset, int _u
 }
 
 void NTPClientExt::setDaylightSaving(int _startMonth,int _endMonth){
-    monthStartsSummerTime =   _startMonth;
-    monthEndsSummerTime = _endMonth; 
-    daylightSaving = true;
-    if(WiFi.status() == WL_CONNECTED) forceUpdate();
+  monthStartsSummerTime =   _startMonth;
+  monthEndsSummerTime = _endMonth; 
+  daylightSaving = true;
+  if(WiFi.status() == WL_CONNECTED) forceUpdate();
 }
 
+void NTPClientExt::unsetDaylightSaving(){
+  daylightSaving = false;
+  if(WiFi.status() == WL_CONNECTED) forceUpdate();  
+}
 
 // Returns a string with the date formatted as YYYY-MM-DD
 String NTPClientExt::getFormattedDate(){
@@ -212,4 +216,11 @@ void NTPClientExt::setLang(const char* _lang){
   if(strcmp(_lang,"EN")==0)
     lang = 1;
 
+}
+
+void NTPClientExt::setTimeZone(int tz){
+  timeZone = tz;
+  setTimeOffset(tz * 3600);
+  if(WiFi.status() == WL_CONNECTED) forceUpdate();
+    
 }
