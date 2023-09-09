@@ -13,7 +13,7 @@ void NTPClientExt::setDaylightSaving(int _startMonth,int _endMonth){
     monthStartsSummerTime =   _startMonth;
     monthEndsSummerTime = _endMonth; 
     daylightSaving = true;
-    forceUpdate();
+    if(WiFi.status() == WL_CONNECTED) forceUpdate();
 }
 
 
@@ -139,7 +139,7 @@ struct tm* NTPClientExt::epoch2tm(time_t epoch){
 // Returns the day of the week (0-6)
 // Perpetual calendar from 1700 to 2299
 // 0=Sunday, 1=Monday ... 6=Saturday
-int NTPClientExt::getWeekDay(int year,int month, int day){
+int NTPClientExt::getWeekday(int year,int month, int day){
   
   int cCentury = tcCentury[(year - 1700) / 100];
   int cYear  = (year % 100) + (year % 100) / 4;
@@ -150,12 +150,31 @@ int NTPClientExt::getWeekDay(int year,int month, int day){
 
 }
 
+// returns the day of the week (0-6) of the current date
+// Perpetual calendar from 1700 to 2299
+// 0=Sunday, 1=Monday ... 6=Saturday
+int NTPClientExt::getWeekday(){
+  
+  int year = getYear();
+  int month = getMonth();
+  int day = getMDay();
+
+  int cCentury = tcCentury[(year - 1700) / 100];
+  int cYear  = (year % 100) + (year % 100) / 4;
+  int cLeapYear = (LEAPYEAR(year) && (month==1 || month==2)) ? -1 : 0; 
+  int cMonth = tcMonth[month - 1];
+  
+  return (cCentury + cYear + cLeapYear + cMonth + day) % 7;
+
+}
+
+
 // Returns the day of the last Sunday of the month (to calculate daylight saving time)
 int NTPClientExt::getLastSundayOfMonth(int year,int month){
   int dayOfMonth = daysOfTheMonth[month - 1];
   if(LEAPYEAR(year) && month==2) 
     dayOfMonth++;
-  return dayOfMonth - getWeekDay(year,month,dayOfMonth);
+  return dayOfMonth - getWeekday(year,month,dayOfMonth);
 }
 
 // Returns true if we are in daylight saving time
@@ -177,9 +196,13 @@ bool NTPClientExt::itsSummerTime(){
 }
 
 // Returns the name of the month as char*
-char* NTPClientExt::getNameOfMonth(int day){
-  return nombreMeses[lang][day];
+const char* NTPClientExt::getNameOfMonth(int _month){
+  return nombreMeses[lang][_month];
 }
+
+const char* NTPClientExt::getNameOfDay(int dia){ 
+  return nombreDia[lang][dia]; 
+  }
 
 // Set the language 0 = Spanish, 1 = English
 void NTPClientExt::setLang(const char* _lang){

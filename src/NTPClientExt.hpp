@@ -35,27 +35,27 @@ class NTPClientExt : public NTPClient, public TaskParent{
     int  getYear();
     int  getMonth();
     int  getMDay();
-    const char* getNameOfDay(int dia){ return nombreDia[lang][dia]; }
-    int  getDayOfTheYear();
-    int  getWeekDay(int anyo,int mes, int dia);
+    int  getWeekday(int anyo,int mes, int dia);
+    int  getWeekday();
     int  getLastSundayOfMonth(int anyo,int mes);
     bool itsSummerTime();
-    char* getNameOfMonth(int day);
     void update();
     void setDaylightSaving(int _startMonth,int _endMonth);
+    int  getDayOfTheYear();
+    const char* getNameOfMonth(int day);
+    const char* getNameOfDay(int dia);
+    void setLang(const char* _lang);
     struct tm* epoch2tm(time_t epoch);
 
 
   protected:
     void loop();
     bool isConnected() { return WiFi.status() == WL_CONNECTED; }
-    
     struct tm ts;
     struct tm tsTemp;
     String buffer;
     char cBuffer[50];
     struct tm* getTS();
-    void setLang(const char* _lang);
     WiFiUDP ntpUDP;
 
     
@@ -71,7 +71,7 @@ class NTPClientExt : public NTPClient, public TaskParent{
                                   " Jan"," Feb"," Mar"," Apr"," May"," Jun"," Jul"," Aug"," Sep"," Oct"," Nov"," Dec"};
     char nombreDia[2][7][10] = {"Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado",
                                "Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
-    int lang = 0;
+    int lang = 1;
 
 };                              
 
