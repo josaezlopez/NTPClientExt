@@ -62,18 +62,18 @@ class NTPClientExt : public NTPClient, public TaskParent{
 
     
   private:
-    int timeZone=0;
-    int tcCentury[6] = {5,3,1,0,-2,-4};
-    int tcMonth[12]  = {6,2,2,5,0,3,5,1,4,6,2,4};
-    int daysOfTheMonth[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
-    int monthStartsSummerTime =   3;  // The last Sunday of March (Western Europe)
-    int monthEndsSummerTime = 10;     // The last Sunday in October (Western Europe)
-    bool daylightSaving;
-    char nombreMeses[2][12][5] = {" Ene"," Feb"," Mar"," Abr"," May"," Jun"," Jul"," Ago"," Sep"," Oct"," Nov"," Dic",
+    int _timeZone=0;
+    int _tcCentury[6] = {5,3,1,0,-2,-4};
+    int _tcMonth[12]  = {6,2,2,5,0,3,5,1,4,6,2,4};
+    int _daysOfTheMonth[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+    int _monthStartsSummerTime =   3;  // The last Sunday of March (Western Europe)
+    int _monthEndsSummerTime = 10;     // The last Sunday in October (Western Europe)
+    bool _daylightSaving;
+    char _nombreMeses[2][12][5] = {" Ene"," Feb"," Mar"," Abr"," May"," Jun"," Jul"," Ago"," Sep"," Oct"," Nov"," Dic",
                                   " Jan"," Feb"," Mar"," Apr"," May"," Jun"," Jul"," Aug"," Sep"," Oct"," Nov"," Dec"};
-    char nombreDia[2][7][10] = {"Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado",
+    char _nombreDia[2][7][10] = {"Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sabado",
                                "Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
-    int lang = 1;
+    int _lang = 1;
 
 };                              
 

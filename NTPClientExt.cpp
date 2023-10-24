@@ -1,23 +1,23 @@
 #include <NTPClientExt.hpp>
 
 // Constructor
-NTPClientExt::NTPClientExt(const char* _poolServerName, int _timeOffset, int _updateInterval,bool _daylightSaving)
-  : NTPClient(ntpUDP, _poolServerName, _timeOffset * 3600, _updateInterval * 1000 * 60), 
+NTPClientExt::NTPClientExt(const char* poolServerName, int timeOffset, int updateInterval,bool daylightSaving)
+  : NTPClient(ntpUDP, poolServerName, timeOffset * 3600, updateInterval * 1000 * 60), 
     TaskParent(NTPTASK_NAME,NTPTASK_HEAP,NTPTASK_PRIORITY, NTPTASK_CORE){
-      daylightSaving = _daylightSaving;
-      timeZone = _timeOffset;
+      _daylightSaving = _daylightSaving;
+      _timeZone = timeOffset;
 
 }
 
-void NTPClientExt::setDaylightSaving(int _startMonth,int _endMonth){
-  monthStartsSummerTime =   _startMonth;
-  monthEndsSummerTime = _endMonth; 
-  daylightSaving = true;
+void NTPClientExt::setDaylightSaving(int startMonth,int endMonth){
+  _monthStartsSummerTime =   startMonth;
+  _monthEndsSummerTime = endMonth; 
+  _daylightSaving = true;
   if(WiFi.status() == WL_CONNECTED) forceUpdate();
 }
 
 void NTPClientExt::unsetDaylightSaving(){
-  daylightSaving = false;
+  _daylightSaving = false;
   if(WiFi.status() == WL_CONNECTED) forceUpdate();  
 }
 
@@ -112,11 +112,11 @@ void NTPClientExt::loop(){
 
 // Actualiza la hora, de ser necesario
 void NTPClientExt::update(){
-  if(daylightSaving){
+  if(_daylightSaving){
     if(itsSummerTime())
-      setTimeOffset((timeZone + 1) * 3600);   
+      setTimeOffset((_timeZone + 1) * 3600);   
     else
-      setTimeOffset(timeZone  * 3600);      
+      setTimeOffset(_timeZone  * 3600);      
     }  
   if(isConnected()){
     NTPClient::update();  
@@ -145,10 +145,10 @@ struct tm* NTPClientExt::epoch2tm(time_t epoch){
 // 0=Sunday, 1=Monday ... 6=Saturday
 int NTPClientExt::getWeekday(int year,int month, int day){
   
-  int cCentury = tcCentury[(year - 1700) / 100];
+  int cCentury = _tcCentury[(year - 1700) / 100];
   int cYear  = (year % 100) + (year % 100) / 4;
   int cLeapYear = (LEAPYEAR(year) && (month==1 || month==2)) ? -1 : 0; 
-  int cMonth = tcMonth[month - 1];
+  int cMonth = _tcMonth[month - 1];
   
   return (cCentury + cYear + cLeapYear + cMonth + day) % 7;
 
@@ -163,10 +163,10 @@ int NTPClientExt::getWeekday(){
   int month = getMonth();
   int day = getMDay();
 
-  int cCentury = tcCentury[(year - 1700) / 100];
+  int cCentury = _tcCentury[(year - 1700) / 100];
   int cYear  = (year % 100) + (year % 100) / 4;
   int cLeapYear = (LEAPYEAR(year) && (month==1 || month==2)) ? -1 : 0; 
-  int cMonth = tcMonth[month - 1];
+  int cMonth = _tcMonth[month - 1];
   
   return (cCentury + cYear + cLeapYear + cMonth + day) % 7;
 
@@ -175,7 +175,7 @@ int NTPClientExt::getWeekday(){
 
 // Returns the day of the last Sunday of the month (to calculate daylight saving time)
 int NTPClientExt::getLastSundayOfMonth(int year,int month){
-  int dayOfMonth = daysOfTheMonth[month - 1];
+  int dayOfMonth = _daysOfTheMonth[month - 1];
   if(LEAPYEAR(year) && month==2) 
     dayOfMonth++;
   return dayOfMonth - getWeekday(year,month,dayOfMonth);
@@ -187,9 +187,9 @@ bool NTPClientExt::itsSummerTime(){
   char frmt[] = "%u-%02u-%02u %02u:00:00";
   char buffer[25];
 
-  sprintf(buffer,frmt,year,monthStartsSummerTime,getLastSundayOfMonth(year,monthStartsSummerTime),2);
+  sprintf(buffer,frmt,year,_monthStartsSummerTime,getLastSundayOfMonth(year,_monthStartsSummerTime),2);
   String iniSunmmerTime = buffer;
-  sprintf(buffer,frmt,year,monthEndsSummerTime,getLastSundayOfMonth(year,monthEndsSummerTime),3);
+  sprintf(buffer,frmt,year,_monthEndsSummerTime,getLastSundayOfMonth(year,_monthEndsSummerTime),3);
   String endSummerTime = buffer;
   String now = getFormattedDateTime();
 
@@ -201,25 +201,25 @@ bool NTPClientExt::itsSummerTime(){
 
 // Returns the name of the month as char*
 const char* NTPClientExt::getNameOfMonth(int _month){
-  return nombreMeses[lang][_month];
+  return _nombreMeses[_lang][_month];
 }
 
 const char* NTPClientExt::getNameOfDay(int dia){ 
-  return nombreDia[lang][dia]; 
+  return _nombreDia[_lang][dia]; 
   }
 
 // Set the language 0 = Spanish, 1 = English
-void NTPClientExt::setLang(const char* _lang){
-  lang = 0;
-  if(strcmp(_lang,"ES")==0)
-    lang = 0;
-  if(strcmp(_lang,"EN")==0)
-    lang = 1;
+void NTPClientExt::setLang(const char* lang){
+  _lang = 0;
+  if(strcmp(lang,"ES")==0)
+    _lang = 0;
+  if(strcmp(lang,"EN")==0)
+    _lang = 1;
 
 }
 
 void NTPClientExt::setTimeZone(int tz){
-  timeZone = tz;
+  _timeZone = tz;
   setTimeOffset(tz * 3600);
   if(WiFi.status() == WL_CONNECTED) forceUpdate();
     
