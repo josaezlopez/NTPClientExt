@@ -1,6 +1,6 @@
 {
     "name": "NTPClientExt",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Clase derivada de https://github.com/arduino-libraries/NTPClient que añade horario de verano automatico",
     "keywords": "arduino, ntpclient, esp32, FreeRTOS",
     "repository":
