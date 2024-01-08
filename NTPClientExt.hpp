@@ -6,7 +6,7 @@
 #include <threadesp32.h>
 
 #define NTPTASK_NAME        "NTP"
-#define NTPTASK_HEAP        (4 * 1024)
+#define NTPTASK_HEAP        (3 * 1024)
 #define NTPTASK_PRIORITY    TaskParent::th_LOWEST_PRIORITY
 #define NTPTASK_CORE        1
 
