@@ -2,13 +2,12 @@
 
 #include <Arduino.h>
 
-#include <NTPClient.h>
-#include <WiFiUdp.h>
 
 #if defined(ESP8266)
   #include <ESP8266WiFi.h>
 
 #elif defined(ESP32)
+  #include <WiFi.h>
   #include <threadesp32.h>
 
   #define NTPTASK_NAME        "NTP"
@@ -17,6 +16,10 @@
   #define NTPTASK_CORE        1
 
 #endif
+
+#include <NTPClient.h>
+#include <WiFiUdp.h>
+
 
 #define NTP_MONTHENDSUMMERTIME 10
 #define LEAPYEAR(year)  (((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) ? true : false)
