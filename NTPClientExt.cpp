@@ -1,14 +1,33 @@
 #include <NTPClientExt.hpp>
 
+
+#if defined(ESP8266)
+
 // Constructor
-NTPClientExt::NTPClientExt(const char* poolServerName, int timeOffset, int updateInterval,bool daylightSaving)
-  : NTPClient(ntpUDP, poolServerName, timeOffset * 3600, updateInterval * 1000 * 60), 
-    TaskParent(NTPTASK_NAME,NTPTASK_HEAP,NTPTASK_PRIORITY, NTPTASK_CORE){
-      _daylightSaving = _daylightSaving;
+NTPClientExt::NTPClientExt(const char* poolServerName, int timeOffset, int updateInterval,bool daylightSaving):
+      NTPClient(ntpUDP, poolServerName, timeOffset * 3600, updateInterval * 1000 * 60){
+      _daylightSaving = daylightSaving;
       _timeZone = timeOffset;
 
 }
 
+#elif defined(ESP32)
+
+// Constructor
+NTPClientExt::NTPClientExt(const char* poolServerName, int timeOffset, int updateInterval,bool daylightSaving)
+  : NTPClient(ntpUDP, poolServerName, timeOffset * 3600, updateInterval * 1000 * 60), 
+    TaskParent(NTPTASK_NAME,NTPTASK_HEAP,NTPTASK_PRIORITY, NTPTASK_CORE){
+      _daylightSaving = daylightSaving;
+      _timeZone = timeOffset;
+
+}
+
+#endif
+
+
+
+
+// Set the clock to daylight saving time.
 void NTPClientExt::setDaylightSaving(int startMonth,int endMonth){
   _monthStartsSummerTime =   startMonth;
   _monthEndsSummerTime = endMonth; 
@@ -16,6 +35,7 @@ void NTPClientExt::setDaylightSaving(int startMonth,int endMonth){
   if(WiFi.status() == WL_CONNECTED) forceUpdate();
 }
 
+// Unset the clock to daylight saving time.
 void NTPClientExt::unsetDaylightSaving(){
   _daylightSaving = false;
   if(WiFi.status() == WL_CONNECTED) forceUpdate();  
@@ -59,7 +79,7 @@ String NTPClientExt::getTime(){
   return buffer;
 }
 
-// Devuelve un string con la hora formateada como HH:MM:SS 
+// Returns a string with the time formatted as HH:MM:SS
 String NTPClientExt::getTimeS(){
   getTS();
   strftime(cBuffer, sizeof(cBuffer), "%H:%M:%S", &ts);
@@ -95,6 +115,9 @@ int  NTPClientExt::getDayOfTheYear(){
   return getTS()->tm_yday;
 }
 
+
+#if defined(ESP32)
+
 /* Funcion de la tarea */
 void NTPClientExt::loop(){
   if(!WiFi.isConnected()){
@@ -110,7 +133,11 @@ void NTPClientExt::loop(){
   }
 }  
 
-// Actualiza la hora, de ser necesario
+#endif
+
+
+
+// Update the time, if necessary
 void NTPClientExt::update(){
   if(_daylightSaving){
     if(itsSummerTime())
@@ -154,7 +181,7 @@ int NTPClientExt::getWeekday(int year,int month, int day){
 
 }
 
-// returns the day of the week (0-6) of the current date
+// Returns the day of the week (0-6) of the current date
 // Perpetual calendar from 1700 to 2299
 // 0=Sunday, 1=Monday ... 6=Saturday
 int NTPClientExt::getWeekday(){
@@ -218,6 +245,7 @@ void NTPClientExt::setLang(const char* lang){
 
 }
 
+// Set the utc time zone
 void NTPClientExt::setTimeZone(int tz){
   _timeZone = tz;
   setTimeOffset(tz * 3600);
