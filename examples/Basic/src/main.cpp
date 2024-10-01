@@ -1,11 +1,13 @@
+
+// Example with ESP8266.
 #include <Arduino.h>
 #include <NTPClientExt.hpp>
 
+// Put your WIFI credentials
 #define WIFISSID "wifi"
 #define WIFIPASS "pass"
 
 /* Western europe (+1) */
-
 NTPClientExt* NTPtime;
 
 #define TIME_ZONE +1  // western europe
@@ -37,10 +39,10 @@ Serial.println("\r\nConectado.");
 
 void loop() {
 
+ NTPtime->update();
  Serial.println(NTPtime->getFormattedDateTime());
  delay(1000);
 
 
 
 }
-
